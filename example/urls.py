@@ -1,4 +1,7 @@
-from django.conf.urls.defaults import patterns, include, url
+try:
+    from django.conf.urls import url, patterns, include
+except ImportError:
+    from django.conf.urls.defaults import url, patterns, include
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin

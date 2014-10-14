@@ -2,12 +2,12 @@
 from django.contrib import admin
 from django.shortcuts import render
 from django.contrib.admin.options import csrf_protect_m
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect
-from django.conf.urls.defaults import url
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseBadRequest
-from django.conf.urls.defaults import patterns
+try:
+    from django.conf.urls import url, patterns
+except ImportError:
+    from django.conf.urls.defaults import url, patterns
 from django.utils.encoding import force_unicode
 from django.utils.functional import update_wrapper
 from django.http import HttpResponseForbidden
@@ -27,7 +27,7 @@ class AdminCommandAdmin(SneakAdmin):
 
     def queryset(self, request):
         # user current user to construct the queryset
-        # so that only commands the user can execute 
+        # so that only commands the user can execute
         # will be visible
         return CommandQuerySet(request.user)
 
