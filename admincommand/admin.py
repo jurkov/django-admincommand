@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from functools import update_wrapper
+
 from django.contrib import admin
 from django.shortcuts import render
 from django.contrib.admin.options import csrf_protect_m
@@ -9,7 +11,6 @@ try:
 except ImportError:
     from django.conf.urls.defaults import url, patterns
 from django.utils.encoding import force_unicode
-from django.utils.functional import update_wrapper
 from django.http import HttpResponseForbidden
 from django.utils.safestring import mark_safe
 from django.contrib import messages
