@@ -26,7 +26,7 @@ from admincommand import core
 class AdminCommandAdmin(SneakAdmin):
     list_display = ('command_name',)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         # user current user to construct the queryset
         # so that only commands the user can execute
         # will be visible
