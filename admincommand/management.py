@@ -1,5 +1,6 @@
 from importlib import import_module
 
+import django
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
@@ -32,4 +33,8 @@ def sync_db_callback(verbosity=0, interactive=False, signal=None, **kwargs):
             content_type=ct,
             name='Can run %s' % subclass.command_name(),
         )
-signals.post_syncdb.connect(sync_db_callback, sender=admincommand.models)
+
+if django.VERSION >= (1, 7):
+    signals.post_migrate.connect(sync_db_callback, sender=admincommand.models)
+else:
+    signals.post_syncdb.connect(sync_db_callback, sender=admincommand.models)
