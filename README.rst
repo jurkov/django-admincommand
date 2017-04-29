@@ -46,7 +46,7 @@ Then you will have to create a configuration class for the command::
 
      # ./music/admincommands.py
 
-     from admincommands.models import AdminCommand
+     from admincommand.models import AdminCommand
 
 
      class Lyrics(AdminCommand):
@@ -56,6 +56,8 @@ Then you will have to create a configuration class for the command::
 
           def get_command_arguments(self, forms_data):
               return [forms_data['title']], {}
+
+*NOTE*: This all works based on naming conventions. The file with the form must be called `admincommands` and the form class name must be the same as the management command file name (with camel case converted to underscore notation).
 
 And all is well, the new admin command will be available under the 
 «Admin Command» area of the administration of the default admin site.
