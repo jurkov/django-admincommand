@@ -60,7 +60,7 @@ def call_command(command_name, user_pk, args=None, kwargs=None):
 
 def run_command(command_config, cleaned_data, user):
     if hasattr(command_config, 'get_command_arguments'):
-        args, kwargs = command_config.get_command_arguments(cleaned_data)
+        args, kwargs = command_config.get_command_arguments(cleaned_data, user)
     else:
         args, kwargs = list(), dict()
     if command_config.asynchronous:
