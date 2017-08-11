@@ -75,7 +75,6 @@ def run_command(command_config, cleaned_data, user):
     else:
         # Change stdout to a StringIO to be able to retrieve output and
         # display it to the user
-        import ipdb; ipdb.set_trace()
         output = StringIO()
         kwargs['stdout'] = output
         management.call_command(command_config.command_name(), *args, **kwargs)
