@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 
 def read(fname):
@@ -15,8 +15,7 @@ setup(
     author='Djaz Team',
     author_email='devweb@liberation.fr',
     url='https://github.com/liberation/django-admincommand',
-    packages=['admincommand'],
-    data_files=[('admincommand/templates/admincommand', [
-        'admincommand/templates/admincommand/output.html',
-        'admincommand/templates/admincommand/run.html'])]
+    packages=find_packages(),
+    include_package_data=True,
+    zip_safe=False
 )

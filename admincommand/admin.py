@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
+from functools import update_wrapper
+
 from django.contrib import admin
 from django.shortcuts import render
 from django.contrib.admin.options import csrf_protect_m
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect
-from django.conf.urls.defaults import url
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseBadRequest
-from django.conf.urls.defaults import patterns
+try:
+    from django.conf.urls import url, patterns
+except ImportError:
+    from django.conf.urls.defaults import url, patterns
 from django.utils.encoding import force_unicode
-from django.utils.functional import update_wrapper
 from django.http import HttpResponseForbidden
 from django.utils.safestring import mark_safe
 from django.contrib import messages
@@ -25,9 +26,9 @@ from admincommand import core
 class AdminCommandAdmin(SneakAdmin):
     list_display = ('command_name',)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         # user current user to construct the queryset
-        # so that only commands the user can execute 
+        # so that only commands the user can execute
         # will be visible
         return CommandQuerySet(request.user)
 

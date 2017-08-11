@@ -1,10 +1,11 @@
 from StringIO import StringIO
 
+from importlib import import_module
+
 from django.conf import settings
 from django.core import management
 from django.core.management import get_commands
 from django.core.management import load_command_class
-from django.utils.importlib import import_module
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from async import schedule
@@ -59,7 +60,7 @@ def call_command(command_name, user_pk, args=None, kwargs=None):
 
 def run_command(command_config, cleaned_data, user):
     if hasattr(command_config, 'get_command_arguments'):
-        args, kwargs = command_config.get_command_arguments(cleaned_data)
+        args, kwargs = command_config.get_command_arguments(cleaned_data, user)
     else:
         args, kwargs = list(), dict()
     if command_config.asynchronous:

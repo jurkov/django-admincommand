@@ -1,3 +1,7 @@
 *.pyc
 *~
 example/db.sqlite
+django_admincommand.egg-info
+.ropeproject
+build/
+dist/
