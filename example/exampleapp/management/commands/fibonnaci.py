@@ -12,6 +12,12 @@ def fibonnaci(x):
 class Command(BaseCommand):
     help = "Compute fibonnaci number"
 
+
+    def add_arguments(self, parser):
+        parser.add_argument('argument')
+
+
     def handle(self, *args, **options):
-        r = fibonnaci(int(args[0]))
-        self.stdout.write('fibonnaci(%s) = %s' % (args[0],r))
+        arg = options['argument']
+        r = fibonnaci(int(arg))
+        self.stdout.write('fibonnaci(%s) = %s' % (arg, r))

@@ -26,7 +26,11 @@ def pi(digits):
 class Command(BaseCommand):
     help = "Compute pi number"
 
+    def add_arguments(self, parser):
+        parser.add_argument('argument')
+
     def handle(self, *args, **options):
-        r = str(pi(int(args[0])))
+        arg = options['argument']
+        r = str(pi(int(arg)))
         r = r[0] + '.' + r[1:]
-        self.stdout.write('pi(%s) = %s' % (args[0],r))
+        self.stdout.write('pi(%s) = %s' % (arg,r))
