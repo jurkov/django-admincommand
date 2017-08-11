@@ -1,4 +1,4 @@
-from StringIO import StringIO
+from six import StringIO
 
 from importlib import import_module
 
@@ -8,12 +8,15 @@ from django.core.management import get_commands
 from django.core.management import load_command_class
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from async import schedule
+try:
+    from async import schedule
+except ImportError:
+    schedule = None
 
 from admincommand.models import AdminCommand
 
 
-# Cache variable to store runnable commands configuration 
+# Cache variable to store runnable commands configuration
 _command_configs = {}
 
 
@@ -58,17 +61,21 @@ def call_command(command_name, user_pk, args=None, kwargs=None):
     management.call_command(command_name, *args, **kwargs)
     return output.getvalue()
 
+
 def run_command(command_config, cleaned_data, user):
     if hasattr(command_config, 'get_command_arguments'):
         args, kwargs = command_config.get_command_arguments(cleaned_data, user)
     else:
         args, kwargs = list(), dict()
     if command_config.asynchronous:
+        if not callable(schedule):
+            return 'This task is asynchronous but django-async is not installed'
         task = schedule(call_command, [command_config.command_name(), user.pk, args, kwargs])
         return task
     else:
         # Change stdout to a StringIO to be able to retrieve output and
         # display it to the user
+        import ipdb; ipdb.set_trace()
         output = StringIO()
         kwargs['stdout'] = output
         management.call_command(command_config.command_name(), *args, **kwargs)

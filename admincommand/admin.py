@@ -6,11 +6,8 @@ from django.shortcuts import render
 from django.contrib.admin.options import csrf_protect_m
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-try:
-    from django.conf.urls import url, patterns
-except ImportError:
-    from django.conf.urls.defaults import url, patterns
-from django.utils.encoding import force_unicode
+from django.conf.urls import url
+from django.utils.encoding import force_text
 from django.http import HttpResponseForbidden
 from django.utils.safestring import mark_safe
 from django.contrib import messages
@@ -38,13 +35,12 @@ class AdminCommandAdmin(SneakAdmin):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        urlpatterns = patterns(
-            '',
+        urlpatterns = [
             url(
                 r'^run/([\w_]+)',
                 wrap(self.run_command_view),
             )
-        )
+        ]
         return urlpatterns + super(AdminCommandAdmin, self).get_urls()
 
     def run_command_view(self, request, url_name):
@@ -61,7 +57,7 @@ class AdminCommandAdmin(SneakAdmin):
 
         ctx = {
             # original needed ``change_form.html`` context variables
-            'module_name': force_unicode(opts.verbose_name_plural),
+            'module_name': force_text(opts.verbose_name_plural),
             'title': admin_command.name(),
             'is_popup': False,
             'root_path': None,

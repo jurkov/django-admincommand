@@ -33,7 +33,7 @@ class AdminCommand(SneakModel):
 
     def command(self):
         """Getter of the management command import core"""
-        import core
+        from . import core
         command = core.get_command(self.command_name())
         return command
 
@@ -53,6 +53,6 @@ class AdminCommand(SneakModel):
 
     @classmethod
     def all(cls):
-        import core
+        from . import core
         for runnable_command in core.get_admin_commands().values():
             yield runnable_command
