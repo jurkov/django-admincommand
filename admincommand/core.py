@@ -1,5 +1,8 @@
 from six import StringIO
 
+import logging
+import contextlib
+
 from importlib import import_module
 
 from django.conf import settings
@@ -7,7 +10,7 @@ from django.core import management
 from django.core.management import get_commands
 from django.core.management import load_command_class
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
+
 try:
     from async import schedule
 except ImportError:
@@ -15,9 +18,9 @@ except ImportError:
 
 from admincommand.models import AdminCommand
 
-
 # Cache variable to store runnable commands configuration
 _command_configs = {}
+output = StringIO()
 
 
 def get_admin_commands():
@@ -33,8 +36,8 @@ def get_admin_commands():
                 for config_name in configs:
                     AdminCommandClass = getattr(module, config_name)
                     if (isinstance(AdminCommandClass, type)
-                        and AdminCommandClass is not AdminCommand
-                        and issubclass(AdminCommandClass, AdminCommand)):
+                            and AdminCommandClass is not AdminCommand
+                            and issubclass(AdminCommandClass, AdminCommand)):
                         command_config = AdminCommandClass()
                         _command_configs[command_config.url_name()] = command_config
     return _command_configs
@@ -53,7 +56,7 @@ def get_command(name):
 
 def call_command(command_name, user_pk, args=None, kwargs=None):
     """Call command and store output"""
-    user = User.objects.get(pk=user_pk)
+    # user = User.objects.get(pk=user_pk) useless ?
     kwargs = kwargs if kwargs else {}
     args = args if args else []
     output = StringIO()
@@ -62,20 +65,47 @@ def call_command(command_name, user_pk, args=None, kwargs=None):
     return output.getvalue()
 
 
+@contextlib.contextmanager
+def monkeypatched(object, name, patch):
+    """ Temporarily monkeypatches an object. """
+
+    pre_patched_value = getattr(object, name)
+    setattr(object, name, patch)
+    yield object
+    setattr(object, name, pre_patched_value)
+
+
+def getMessage(self):
+    msg = str(self.msg)
+    if self.args:
+        msg = msg % self.args
+    output.write(msg + '<br>')
+    return msg
+
+
 def run_command(command_config, cleaned_data, user):
     if hasattr(command_config, 'get_command_arguments'):
         args, kwargs = command_config.get_command_arguments(cleaned_data, user)
     else:
         args, kwargs = list(), dict()
+
     if command_config.asynchronous:
         if not callable(schedule):
             return 'This task is asynchronous but django-async is not installed'
         task = schedule(call_command, [command_config.command_name(), user.pk, args, kwargs])
         return task
-    else:
-        # Change stdout to a StringIO to be able to retrieve output and
-        # display it to the user
-        output = StringIO()
-        kwargs['stdout'] = output
+
+    # Synchronous call
+    # Change stdout to a StringIO to be able to retrieve output and display it to the admin
+    # TODO put back here legacy code with settings if needed
+
+    with monkeypatched(logging.LogRecord, 'getMessage', getMessage):
         management.call_command(command_config.command_name(), *args, **kwargs)
-        return output.getvalue()
+
+    value = output.getvalue()
+
+    print(value[0: 500])
+
+    output.seek(0)
+    output.truncate(0)
+    return value

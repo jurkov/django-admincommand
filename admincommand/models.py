@@ -1,8 +1,8 @@
-from django import forms
 
 from sneak.models import SneakModel
 
 from admincommand.utils import generate_instance_name, generate_human_name
+from admincommand.forms import GenericCommandForm
 
 
 class AdminCommand(SneakModel):
@@ -19,9 +19,7 @@ class AdminCommand(SneakModel):
     asynchronous = False
 
     objects = None
-
-    class form(forms.Form):
-        pass
+    form = GenericCommandForm
 
     def __init__(self, *args, **kwargs):
         super(AdminCommand, self).__init__(*args, **kwargs)
@@ -56,3 +54,18 @@ class AdminCommand(SneakModel):
         from . import core
         for runnable_command in core.get_admin_commands().values():
             yield runnable_command
+
+    def get_command_arguments(self, forms_data, user):
+        # TODO check why user was passed over here
+
+        args = []
+        for key, value in forms_data.items():
+
+            if value is True:
+                args.append('--' + key)
+            elif value is False:
+                pass  # Django commands does not accepts False options to be explicitly set.
+            else:
+                args.append('--' + key + '=' + value)
+
+        return args, {}
