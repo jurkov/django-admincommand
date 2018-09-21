@@ -10,11 +10,10 @@ def read(fname):
 setup(
     name='django-admincommand',
     version='0.1.2',
-    description='Execute management commands from the admin',
+    description='Execute management commands from the Django admin',
     long_description=read('README.rst'),
-    author='Djaz Team',
-    author_email='devweb@liberation.fr',
-    url='https://github.com/liberation/django-admincommand',
+    author='Anto59290',
+    url='https://github.com/BackMarket/django-admincommand',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False

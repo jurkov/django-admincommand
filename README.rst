@@ -94,13 +94,16 @@ Contributions
 ===========
 
 Original repo: https://github.com/liberation/django-admincommand
+
 First author: `Djaz Team`, with commits from @amirouche, @diox, @lauxley
+
 Pull request taken from @mgaitan : https://github.com/liberation/django-admincommand/pull/10
+
 
 
 Asynchronous tasks
 ==================
-** This is not supported for now, use at your own risk **
+**This is not supported for now, use at your own risk**
 
 If you want to execute commands asynchronously you have to 
 specify it in the AdminCommand configuration class with the 
