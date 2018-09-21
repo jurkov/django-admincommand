@@ -1,8 +1,5 @@
-from six import StringIO
-
-import logging
 import contextlib
-
+import logging
 from importlib import import_module
 
 from django.conf import settings
@@ -10,13 +7,14 @@ from django.core import management
 from django.core.management import get_commands
 from django.core.management import load_command_class
 from django.core.management.base import BaseCommand
+from six import StringIO
+
+from admincommand.models import AdminCommand
 
 try:
     from async import schedule
 except ImportError:
     schedule = None
-
-from admincommand.models import AdminCommand
 
 # Cache variable to store runnable commands configuration
 _command_configs = {}
@@ -24,24 +22,26 @@ output = StringIO()
 
 
 def get_admin_commands():
-    if not _command_configs:
-        for app_module_path in settings.INSTALLED_APPS:
-            try:
-                admin_commands_path = "%s.admincommands" % app_module_path
-                module = import_module(admin_commands_path)
-            except ImportError:
-                pass
-            else:
-                configs = dir(module)
-                for config_name in configs:
-                    AdminCommandClass = getattr(module, config_name)
-                    if (
-                        isinstance(AdminCommandClass, type)
-                        and AdminCommandClass is not AdminCommand
-                        and issubclass(AdminCommandClass, AdminCommand)
-                    ):
-                        command_config = AdminCommandClass()
-                        _command_configs[command_config.url_name()] = command_config
+    if _command_configs:
+        return _command_configs
+
+    for app_module_path in settings.INSTALLED_APPS:
+        try:
+            admin_commands_path = "%s.admincommands" % app_module_path
+            module = import_module(admin_commands_path)
+        except ImportError:
+            pass
+        else:
+            configs = dir(module)
+            for config_name in configs:
+                AdminCommandClass = getattr(module, config_name)
+                if (
+                    isinstance(AdminCommandClass, type)
+                    and AdminCommandClass is not AdminCommand
+                    and issubclass(AdminCommandClass, AdminCommand)
+                ):
+                    command_config = AdminCommandClass()
+                    _command_configs[command_config.url_name()] = command_config
     return _command_configs
 
 
@@ -57,10 +57,12 @@ def get_command(name):
 
 
 def call_command(command_name, user_pk, args=None, kwargs=None):
-    """Call command and store output"""
+    """
+    Call command and store output
+    """
     # user = User.objects.get(pk=user_pk) useless ?
-    kwargs = kwargs if kwargs else {}
-    args = args if args else []
+    kwargs = kwargs or {}
+    args = args or []
     output = StringIO()
     kwargs["stdout"] = output
     management.call_command(command_name, *args, **kwargs)
@@ -69,7 +71,9 @@ def call_command(command_name, user_pk, args=None, kwargs=None):
 
 @contextlib.contextmanager
 def monkeypatched(object, name, patch):
-    """ Temporarily monkeypatches an object. """
+    """
+    Temporarily monkeypatches an object.
+    """
 
     pre_patched_value = getattr(object, name)
     setattr(object, name, patch)

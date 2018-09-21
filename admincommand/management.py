@@ -2,8 +2,8 @@ from importlib import import_module
 
 import django
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import signals
 
 import admincommand
@@ -25,7 +25,7 @@ def sync_db_callback(verbosity=0, interactive=False, signal=None, **kwargs):
     ct = ContentType.objects.get(model="admincommand", app_label="admincommand")
     for subclass in admincommand.models.AdminCommand.__subclasses__():
         codename = subclass.permission_codename()
-        perm, created = Permission.objects.get_or_create(
+        Permission.objects.get_or_create(
             codename=codename, content_type=ct, name="Can run %s" % subclass.command_name()
         )
 

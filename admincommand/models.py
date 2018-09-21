@@ -1,12 +1,13 @@
 
-from sneak.models import SneakModel
-
-from admincommand.utils import generate_instance_name, generate_human_name
 from admincommand.forms import GenericCommandForm
+from admincommand.utils import generate_human_name
+from admincommand.utils import generate_instance_name
+from sneak.models import SneakModel
 
 
 class AdminCommand(SneakModel):
-    """Subclass this class to create an admin command
+    """
+    Subclass this class to create an admin command
     class name should match the name of the command to be executed
     using the reverse algorithm used to construct instance names following
     the PEP8. For instance for a management command named
@@ -31,10 +32,9 @@ class AdminCommand(SneakModel):
 
     def command(self):
         """Getter of the management command import core"""
-        from . import core
+        from . import core  # noqa
 
-        command = core.get_command(self.command_name())
-        return command
+        return core.get_command(self.command_name())
 
     @classmethod
     def command_name(cls):
@@ -59,7 +59,6 @@ class AdminCommand(SneakModel):
 
     def get_command_arguments(self, forms_data, user):
         # TODO check why user was passed over here
-
         args = []
         for key, value in forms_data.items():
 

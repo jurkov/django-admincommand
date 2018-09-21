@@ -13,26 +13,28 @@ class GenericCommandForm(forms.Form):
         command = kwargs.pop("command", None)
         super(GenericCommandForm, self).__init__(*args, **kwargs)
 
-        if command:
-            self.command = command
+        if not command:
+            return
 
-            default_actions = ("help", "version", "verbosity", "settings", "pythonpath", "traceback", "no_color")
-            # TODO check what is the purpose of those arguments here, maybe needed only in case of full help display ?
-            actions = self.command.command().create_parser("", None)._actions
-            # Example
-            # {'const': True, 'help': None, 'option_strings': ['--run'], 'dest': 'run', 'required': False, 'nargs': 0,
-            #  'choices': None, 'default': False, type': None, 'metavar': None}
+        self.command = command
 
-            for option in actions:
-                if option.dest not in default_actions:
+        default_actions = ("help", "version", "verbosity", "settings", "pythonpath", "traceback", "no_color")
+        # TODO check what is the purpose of those arguments here, maybe needed only in case of full help display ?
+        actions = self.command.command().create_parser("", None)._actions
+        # Example
+        # {'const': True, 'help': None, 'option_strings': ['--run'], 'dest': 'run', 'required': False, 'nargs': 0,
+        #  'choices': None, 'default': False, type': None, 'metavar': None}
 
-                    if option.type:
-                        form_callable = self._get_form_field_based_on_type(option.type)
-                        self.fields[option.dest] = form_callable(
-                            initial=option.default, required=option.required, help_text=option.help
-                        )
+        for option in actions:
+            if option.dest not in default_actions:
 
-                    else:  # If not type is given we wild guess it is a boolean
-                        self.fields[option.dest] = forms.BooleanField(
-                            initial=option.default, required=option.required, help_text=option.help
-                        )
+                if option.type:
+                    form_callable = self._get_form_field_based_on_type(option.type)
+                    self.fields[option.dest] = form_callable(
+                        initial=option.default, required=option.required, help_text=option.help
+                    )
+
+                else:  # If not type is given we wild guess it is a boolean
+                    self.fields[option.dest] = forms.BooleanField(
+                        initial=option.default, required=option.required, help_text=option.help
+                    )

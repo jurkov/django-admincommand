@@ -1,32 +1,29 @@
 # -*- coding: utf-8 -*-
 from functools import update_wrapper
 
-from django.contrib import admin
-from django.shortcuts import render
-from django.contrib.admin.options import csrf_protect_m
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
 from django.conf.urls import url
-from django.utils.encoding import force_text
-from django.http import HttpResponseForbidden
-from django.utils.safestring import mark_safe
+from django.contrib import admin
 from django.contrib import messages
+from django.contrib.admin.options import csrf_protect_m
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseForbidden
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.utils.encoding import force_text
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext
 
-from sneak.admin import SneakAdmin
-
-from admincommand.query import CommandQuerySet
-from admincommand.models import AdminCommand as AdminCommandModel
 from admincommand import core
+from admincommand.models import AdminCommand as AdminCommandModel
+from admincommand.query import CommandQuerySet
+from sneak.admin import SneakAdmin
 
 
 class AdminCommandAdmin(SneakAdmin):
     list_display = ("command_name",)
 
     def get_queryset(self, request):
-        # user current user to construct the queryset
-        # so that only commands the user can execute
-        # will be visible
+        # use current user to construct the queryset so that only commands the user can execute will be visible
         return CommandQuerySet(request.user)
 
     def get_urls(self):
@@ -71,10 +68,10 @@ class AdminCommandAdmin(SneakAdmin):
                     ctx["output"] = coreponse
                     return render(request, "admincommand/output.html", ctx)
                 else:
-                    msg = "Task is set to run in the next 5 minutes or less"
-                    msg += " if by any luck, the task went with a duck"
-                    msg += " and did not achieve it's duty, ask for help"
-                    msg = ugettext(msg)
+                    msg = ugettext(
+                        "Task is set to run in the next 5 minutes or less. If by any luck, the task went with a duck "
+                        "and did not achieve it's duty, ask for help"
+                    )
                     messages.info(request, msg)
                 path = reverse("admin:admincommand_admincommand_changelist")
                 return HttpResponseRedirect(path)
@@ -86,8 +83,10 @@ class AdminCommandAdmin(SneakAdmin):
         return render(request, "admincommand/run.html", ctx)
 
     def command_name(self, obj):
-        """Used to populate admin change list row with a link to
-        the form that of the command"""
+        """
+        Used to populate admin change list row with a link to
+        the form that of the command
+        """
         path = reverse("admin:admincommand_admincommand_changelist")
         return '<a href="%srun/%s">%s: %s</a>' % (path, obj.url_name(), obj.name(), obj.get_help())
 
@@ -95,7 +94,7 @@ class AdminCommandAdmin(SneakAdmin):
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
-        extra_context = {"title": u"Selectionner une commande à lancer"}
+        extra_context = {"title": u"Sélectionner une commande à lancer"}
         return super(AdminCommandAdmin, self).changelist_view(request, extra_context)
 
 
