@@ -4,6 +4,16 @@
 Django-AdminCommand is a Django application that makes it possible
 to run Django management commands from the admin.
 
+## Contributions
+
+This is an enhanced fork, see the original repo: https://github.com/liberation/django-admincommand
+
+First author: `Djaz Team`, with commits from @amirouche, @diox, @lauxley
+
+Django 1.11 compatibility pull request taken from @mgaitan : https://github.com/liberation/django-admincommand/pull/10
+
+
+
 ## Dependencies
 
  - django-async (not mandatory)
@@ -85,19 +95,9 @@ You MUST add to every user or groups that should have access to the list of comm
 only see and be able to execute admin commands for which they have the permission.
 
 
-## Contributions
-
-Original repo: https://github.com/liberation/django-admincommand
-
-First author: `Djaz Team`, with commits from @amirouche, @diox, @lauxley
-
-Pull request taken from @mgaitan : https://github.com/liberation/django-admincommand/pull/10
-
-
-
 ## Asynchronous tasks
 
-**This is not supported for now, use at your own risk**
+**This is not actively supported for now, use at your own risk**
 
 If you want to execute commands asynchronously you have to
 specify it in the AdminCommand configuration class with the

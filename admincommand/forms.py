@@ -32,7 +32,6 @@ class GenericCommandForm(forms.Form):
                 if option.dest not in default_actions:
 
                     if option.type:
-                        print('type found for option %s, type %s' % (option.dest, option.type))
                         form_callable = self._get_form_field_based_on_type(option.type)
                         self.fields[option.dest] = form_callable(initial=option.default, required=option.required,
                                                                  help_text=option.help)

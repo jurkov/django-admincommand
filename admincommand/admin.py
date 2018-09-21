@@ -69,17 +69,8 @@ class AdminCommandAdmin(SneakAdmin):
         }
 
         if request.method == 'POST':
-            import copy
-            query_dict = copy.deepcopy(request.POST) # TODO remove me
-            # query_dict['command'] = admin_command
-            print(query_dict)
-            print('sending data to form')
-            form = admin_command.form(query_dict, command=admin_command)
+            form = admin_command.form(request.POST, command=admin_command)
             if form.is_valid():
-
-                print('form is valid')
-
-
                 coreponse = core.run_command(
                     admin_command,
                     form.cleaned_data,

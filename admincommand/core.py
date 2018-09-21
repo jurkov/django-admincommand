@@ -103,9 +103,6 @@ def run_command(command_config, cleaned_data, user):
         management.call_command(command_config.command_name(), *args, **kwargs)
 
     value = output.getvalue()
-
-    print(value[0: 500])
-
     output.seek(0)
     output.truncate(0)
     return value
