@@ -8,13 +8,13 @@ def read(fname):
 
 
 setup(
-    name='django-admincommand',
-    version='0.1.2',
-    description='Execute management commands from the Django admin',
-    long_description=read('README.rst'),
-    author='Anto59290',
-    url='https://github.com/BackMarket/django-admincommand',
+    name="django-admincommand",
+    version="0.1.2",
+    description="Execute management commands from the Django admin",
+    long_description=read("README.rst"),
+    author="Anto59290",
+    url="https://github.com/BackMarket/django-admincommand",
     packages=find_packages(),
     include_package_data=True,
-    zip_safe=False
+    zip_safe=False,
 )

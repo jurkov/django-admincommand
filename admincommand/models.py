@@ -25,13 +25,14 @@ class AdminCommand(SneakModel):
         super(AdminCommand, self).__init__(*args, **kwargs)
 
     def get_help(self):
-        if hasattr(self, 'help'):
+        if hasattr(self, "help"):
             return self.help
         return self.command().help
 
     def command(self):
         """Getter of the management command import core"""
         from . import core
+
         command = core.get_command(self.command_name())
         return command
 
@@ -47,11 +48,12 @@ class AdminCommand(SneakModel):
 
     @classmethod
     def permission_codename(cls):
-        return 'can_run_command_%s' % cls.command_name()
+        return "can_run_command_%s" % cls.command_name()
 
     @classmethod
     def all(cls):
         from . import core
+
         for runnable_command in core.get_admin_commands().values():
             yield runnable_command
 
@@ -62,10 +64,10 @@ class AdminCommand(SneakModel):
         for key, value in forms_data.items():
 
             if value is True:
-                args.append('--' + key)
+                args.append("--" + key)
             elif value is False:
                 pass  # Django commands does not accepts False options to be explicitly set.
             else:
-                args.append('--' + key + '=' + value)
+                args.append("--" + key + "=" + value)
 
         return args, {}

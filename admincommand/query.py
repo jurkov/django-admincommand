@@ -24,7 +24,7 @@ class CommandQuerySet(ListQuerySet):
         for command in AdminCommand.all():
             # only list commands that the user can run
             # to avoid useless 503 messages
-            full_permission_codename = 'admincommand.%s' % command.permission_codename()
+            full_permission_codename = "admincommand.%s" % command.permission_codename()
             if self.user.has_perm(full_permission_codename):
                 all.append(command)
         return type(self)(self.user, all)

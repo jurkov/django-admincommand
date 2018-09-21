@@ -7,7 +7,7 @@ def arccot(x, unity):
     n = 3
     sign = -1
     while 1:
-        xpower = xpower // (x*x)
+        xpower = xpower // (x * x)
         term = xpower // n
         if not term:
             break
@@ -18,19 +18,19 @@ def arccot(x, unity):
 
 
 def pi(digits):
-    unity = 10**(digits + 10)
-    pi = 4 * (4*arccot(5, unity) - arccot(239, unity))
-    return pi // 10**10
+    unity = 10 ** (digits + 10)
+    pi = 4 * (4 * arccot(5, unity) - arccot(239, unity))
+    return pi // 10 ** 10
 
 
 class Command(BaseCommand):
     help = "Compute pi number"
 
     def add_arguments(self, parser):
-        parser.add_argument('argument')
+        parser.add_argument("argument")
 
     def handle(self, *args, **options):
-        arg = options['argument']
+        arg = options["argument"]
         r = str(pi(int(arg)))
-        r = r[0] + '.' + r[1:]
-        self.stdout.write('pi(%s) = %s' % (arg,r))
+        r = r[0] + "." + r[1:]
+        self.stdout.write("pi(%s) = %s" % (arg, r))

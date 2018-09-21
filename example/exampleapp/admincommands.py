@@ -4,12 +4,11 @@ from django import forms
 
 
 class Fibonnaci(AdminCommand):
-
     class form(forms.Form):
         x = forms.IntegerField()
 
     def get_command_arguments(self, forms_data, user):
-        return [forms_data['x']], {}
+        return [forms_data["x"]], {}
 
 
 class Pi(AdminCommand):
@@ -20,4 +19,4 @@ class Pi(AdminCommand):
         digits = forms.IntegerField()
 
     def get_command_arguments(self, forms_data, user):
-        return [forms_data['digits']], {}
+        return [forms_data["digits"]], {}
