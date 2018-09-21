@@ -12,11 +12,6 @@ class GenericCommandForm(forms.Form):
     }
 
     def _get_form_field_based_on_type(self, type):
-
-        #
-        # print(type)
-        # print(str(type))
-
         return self.mapping_type.get(type, forms.BooleanField)
 
     def __init__(self, *args, **kwargs):

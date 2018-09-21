@@ -9,7 +9,7 @@ def read(fname):
 
 setup(
     name='django-admincommand',
-    version='0.1.1',
+    version='0.1.2',
     description='Execute management commands from the admin',
     long_description=read('README.rst'),
     author='Djaz Team',
