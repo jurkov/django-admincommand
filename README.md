@@ -20,6 +20,13 @@ Django 1.11 compatibility pull request taken from @mgaitan : https://github.com/
  - django-async (not mandatory)
  - django-sneak
 
+
+## Installation
+
+For now you can only clone this repo and run `python setup.py develop` (sudo if needed) to setup Django AdminCommand.
+
+(Soon on PyPi)
+
 ## Settings
 
 
