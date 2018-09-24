@@ -13,12 +13,17 @@ First author: `Djaz Team`, with commits from @amirouche, @diox, @lauxley
 
 Django 1.11 compatibility pull request taken from @mgaitan : https://github.com/liberation/django-admincommand/pull/10
 
+Starting from the fork, changes were made in the following area:
 
+- Forms are built dynamically using parser inspection to detect types.
+- Logs are collected even when using the Python/Django logging module.
+- Asynchronous is not actively supported for now, we have to dig further in.
+- Misc: Pushed to Pypi, linting, code cleanup.
 
 ## Dependencies
 
- - django-async (not mandatory)
- - django-sneak
+ - django-async (not mandatory): Used to make task asynchronous.
+ - django-sneak: Used to bybass Django admin model coupling.
 
 
 ## Installation
