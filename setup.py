@@ -11,7 +11,7 @@ def read(fname):
 
 setup(
     name="django-admincommand",
-    version="0.1.2",
+    version="0.1.6",
     description="Execute management commands from the Django admin",
     long_description=read("README.md"),
     author="Anto59290",
@@ -19,6 +19,5 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=["django-sneak==0.1"],
-    dependency_links=["https://github.com/liberation/django-sneak/tarball/master#egg=django-sneak-0.1"],
+    install_requires=["django-sneak", ],
 )
