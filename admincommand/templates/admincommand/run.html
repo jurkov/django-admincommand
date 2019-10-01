@@ -20,7 +20,7 @@
 
 {% block content %}
     <p>{{ help }}</p>
-    <form method="POST">{% csrf_token %}
+    <form enctype="multipart/form-data" method="POST">{% csrf_token %}
         {{ form.as_ul }}
         <input type="submit" value="Run"/>
     </form>
