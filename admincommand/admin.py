@@ -94,7 +94,7 @@ class AdminCommandAdmin(SneakAdmin):
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
-        extra_context = {"title": u"Sélectionner une commande à lancer"}
+        extra_context = {"title": u"Select a command"}
         return super(AdminCommandAdmin, self).changelist_view(request, extra_context)
 
 
