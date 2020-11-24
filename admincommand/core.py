@@ -11,10 +11,7 @@ from six import StringIO
 
 from admincommand.models import AdminCommand
 
-try:
-    from async import schedule
-except ImportError:
-    schedule = None
+schedule = None
 
 # Cache variable to store runnable commands configuration
 _command_configs = {}
