@@ -88,7 +88,7 @@ class AdminCommandAdmin(SneakAdmin):
         the form that of the command
         """
         path = reverse("admin:admincommand_admincommand_changelist")
-        return '<a href="%srun/%s">%s: %s</a>' % (path, obj.url_name(), obj.name(), obj.get_help())
+        return mark_safe('<a href="%srun/%s">%s: %s</a>' % (path, obj.url_name(), obj.name(), obj.get_help()))
 
     command_name.allow_tags = True
 
