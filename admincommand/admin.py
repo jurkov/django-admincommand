@@ -61,7 +61,7 @@ class AdminCommandAdmin(SneakAdmin):
         }
 
         if request.method == "POST":
-            form = admin_command.form(request.POST, request.FILES, command=admin_command)
+            form = admin_command.form(request.POST, request.FILES)
             if form.is_valid():
                 coreponse = core.run_command(admin_command, form.cleaned_data, request.user)
                 if not admin_command.asynchronous:
@@ -78,7 +78,7 @@ class AdminCommandAdmin(SneakAdmin):
             else:
                 ctx["form"] = form
         else:
-            ctx["form"] = admin_command.form(command=admin_command)
+            ctx["form"] = admin_command.form()
         ctx["media"] = mark_safe(ctx["form"].media.render())
         return render(request, "admincommand/run.html", ctx)
 
