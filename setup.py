@@ -19,5 +19,5 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=["django-sneak @ git+https://github.com/zapier/django-sneak.git#egg=django-sneak", ],
+    install_requires=["django-sneak", ],
 )
