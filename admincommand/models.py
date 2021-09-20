@@ -1,11 +1,10 @@
-
 from admincommand.forms import GenericCommandForm
 from admincommand.utils import generate_human_name
 from admincommand.utils import generate_instance_name
-from sneak.models import SneakModel
+from django.db import models
 
 
-class AdminCommand(SneakModel):
+class AdminCommand(models.Model):
     """
     Subclass this class to create an admin command
     class name should match the name of the command to be executed
@@ -23,7 +22,7 @@ class AdminCommand(SneakModel):
     form = GenericCommandForm
 
     def __init__(self, *args, **kwargs):
-        super(AdminCommand, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_help(self):
         if hasattr(self, "help"):
@@ -63,10 +62,8 @@ class AdminCommand(SneakModel):
         for key, value in forms_data.items():
 
             if value is True:
-                args.append("--" + key)
-            elif value is False:
-                pass  # Django commands does not accepts False options to be explicitly set.
-            else:
-                args.append("--" + key + "=" + value)
+                args.append(f"--{key}")
+            elif value:
+                args.append(f"--{key}={value}")
 
         return args, {}

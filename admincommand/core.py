@@ -6,8 +6,8 @@ from django.conf import settings
 from django.core import management
 from django.core.management import get_commands
 from django.core.management import load_command_class
-from django.core.management.base import BaseCommand
-from six import StringIO
+from django.core.management.base import BaseCommand, CommandError
+from io import StringIO
 
 from admincommand.models import AdminCommand
 
@@ -47,10 +47,8 @@ def get_command(name):
     app_name = get_commands()[name]
     if isinstance(app_name, BaseCommand):
         # If the command is already loaded, use it directly.
-        klass = app_name
-    else:
-        klass = load_command_class(app_name, name)
-    return klass
+        return app_name
+    return load_command_class(app_name, name)
 
 
 def call_command(command_name, user_pk, args=None, kwargs=None):
@@ -103,7 +101,10 @@ def run_command(command_config, cleaned_data, user):
     # TODO put back here legacy code with settings if needed
 
     with monkeypatched(logging.LogRecord, "getMessage", getMessage):
-        management.call_command(command_config.command_name(), *args, **kwargs)
+        try:
+            management.call_command(command_config.command_name(), *args, **kwargs)
+        except CommandError as error:
+            return error
 
     value = output.getvalue()
     output.seek(0)

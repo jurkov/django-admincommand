@@ -11,15 +11,12 @@ def read(fname):
 
 setup(
     name="django-admincommand",
-    version="0.1.6",
+    version="0.2",
     description="Execute management commands from the Django admin",
     long_description=read("README.md"),
-    author="Anto59290",
-    url="https://github.com/BackMarket/django-admincommand",
+    author="dishults",
+    url="https://github.com/Hxperience1/django-admincommand",
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=[
-        'sneak @ git+https://github.com/rphlo/django-sneak.git',
-    ],
 )

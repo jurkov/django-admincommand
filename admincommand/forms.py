@@ -10,22 +10,16 @@ class GenericCommandForm(forms.Form):
         return self.mapping_type.get(type, forms.BooleanField)
 
     def __init__(self, *args, **kwargs):
-        command = kwargs.pop("command", None)
-        super(GenericCommandForm, self).__init__(*args, **kwargs)
-
-        if not command:
-            return
-
-        self.command = command
+        super().__init__(*args, **kwargs)
 
         default_actions = ("help", "version", "verbosity", "settings", "pythonpath", "traceback", "no_color")
         # TODO check what is the purpose of those arguments here, maybe needed only in case of full help display ?
-        actions = self.command.command().create_parser("", None)._actions
+        parser = self.command.create_parser("", None)
         # Example
         # {'const': True, 'help': None, 'option_strings': ['--run'], 'dest': 'run', 'required': False, 'nargs': 0,
         #  'choices': None, 'default': False, type': None, 'metavar': None}
 
-        for option in actions:
+        for option in parser._actions:
             if option.dest not in default_actions:
 
                 if option.type:

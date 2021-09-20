@@ -16,10 +16,9 @@ from django.utils.translation import ugettext
 from admincommand import core
 from admincommand.models import AdminCommand as AdminCommandModel
 from admincommand.query import CommandQuerySet
-from sneak.admin import SneakAdmin
 
 
-class AdminCommandAdmin(SneakAdmin):
+class AdminCommandAdmin(admin.ModelAdmin):
     list_display = ("command_name",)
 
     def get_queryset(self, request):
@@ -60,6 +59,7 @@ class AdminCommandAdmin(SneakAdmin):
             "help": help,
         }
 
+        admin_command.form.command = admin_command.command()
         if request.method == "POST":
             form = admin_command.form(request.POST, request.FILES)
             if form.is_valid():
