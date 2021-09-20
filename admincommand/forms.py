@@ -1,10 +1,19 @@
+import json
 from django import forms
+from dateutil.parser import parse as date_parse
 
 
 class GenericCommandForm(forms.Form):
     command = None
 
-    mapping_type = {str: forms.CharField, bool: forms.CharField, int: forms.IntegerField, float: forms.FloatField}
+    mapping_type = {
+        bool: forms.CharField,
+        str: forms.CharField,
+        int: forms.IntegerField,
+        float: forms.FloatField,
+        json.loads: forms.JSONField,
+        date_parse: forms.DateField,
+    }
 
     def _get_form_field_based_on_type(self, type):
         return self.mapping_type.get(type, forms.BooleanField)
@@ -21,14 +30,7 @@ class GenericCommandForm(forms.Form):
 
         for option in parser._actions:
             if option.dest not in default_actions:
-
-                if option.type:
-                    form_callable = self._get_form_field_based_on_type(option.type)
-                    self.fields[option.dest] = form_callable(
-                        initial=option.default, required=option.required, help_text=option.help
-                    )
-
-                else:  # If not type is given we wild guess it is a boolean
-                    self.fields[option.dest] = forms.BooleanField(
-                        initial=option.default, required=option.required, help_text=option.help
-                    )
+                form_callable = self._get_form_field_based_on_type(option.type)
+                self.fields[option.dest] = form_callable(
+                    initial=option.default, required=option.required, help_text=option.help
+                )
