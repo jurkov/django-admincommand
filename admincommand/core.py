@@ -4,9 +4,7 @@ from importlib import import_module
 
 from django.conf import settings
 from django.core import management
-from django.core.management import get_commands
-from django.core.management import load_command_class
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
 from io import StringIO
 
 from admincommand.models import AdminCommand
@@ -24,31 +22,18 @@ def get_admin_commands():
 
     for app_module_path in settings.INSTALLED_APPS:
         try:
-            admin_commands_path = "%s.admincommands" % app_module_path
+            admin_commands_path = f"{app_module_path}.admin"
             module = import_module(admin_commands_path)
         except ImportError:
             pass
         else:
-            configs = dir(module)
-            for config_name in configs:
-                AdminCommandClass = getattr(module, config_name)
-                if (
-                    isinstance(AdminCommandClass, type)
-                    and AdminCommandClass is not AdminCommand
-                    and issubclass(AdminCommandClass, AdminCommand)
-                ):
-                    command_config = AdminCommandClass()
-                    _command_configs[command_config.url_name()] = command_config
+            admincommands = getattr(module, 'ADMIN_COMMAND_LIST', [])
+            for command_name in admincommands:
+                if command_name != "admin_command":
+                    command_config = AdminCommand(command_name)
+                    _command_configs[command_name] = command_config
+
     return _command_configs
-
-
-def get_command(name):
-    # this is a copy pasted from django.core.management.call_command
-    app_name = get_commands()[name]
-    if isinstance(app_name, BaseCommand):
-        # If the command is already loaded, use it directly.
-        return app_name
-    return load_command_class(app_name, name)
 
 
 def call_command(command_name, user_pk, args=None, kwargs=None):
@@ -93,7 +78,7 @@ def run_command(command_config, cleaned_data, user):
     if command_config.asynchronous:
         if not callable(schedule):
             return "This task is asynchronous but django-async is not installed"
-        task = schedule(call_command, [command_config.command_name(), user.pk, args, kwargs])
+        task = schedule(call_command, [command_config.name, user.pk, args, kwargs])
         return task
 
     # Synchronous call
@@ -102,7 +87,7 @@ def run_command(command_config, cleaned_data, user):
 
     with monkeypatched(logging.LogRecord, "getMessage", getMessage):
         try:
-            management.call_command(command_config.command_name(), *args, **kwargs)
+            management.call_command(command_config.name, *args, **kwargs)
         except CommandError as error:
             return error
 

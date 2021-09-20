@@ -50,7 +50,7 @@ class AdminCommandAdmin(admin.ModelAdmin):
         ctx = {
             # original needed ``change_form.html`` context variables
             "module_name": force_text(opts.verbose_name_plural),
-            "title": admin_command.name(),
+            "title": admin_command.name,
             "is_popup": False,
             "root_path": None,
             "app_label": app_label,
@@ -88,7 +88,7 @@ class AdminCommandAdmin(admin.ModelAdmin):
         the form that of the command
         """
         path = reverse("admin:admincommand_admincommand_changelist")
-        return mark_safe('<a href="%srun/%s">%s: %s</a>' % (path, obj.url_name(), obj.name(), obj.get_help()))
+        return mark_safe('<a href="%srun/%s">%s: %s</a>' % (path, obj.name, obj.name, obj.get_help()))
 
     command_name.allow_tags = True
 

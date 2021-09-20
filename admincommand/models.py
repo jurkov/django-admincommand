@@ -1,7 +1,8 @@
-from admincommand.forms import GenericCommandForm
-from admincommand.utils import generate_human_name
-from admincommand.utils import generate_instance_name
 from django.db import models
+from django.core.management import get_commands, load_command_class
+from django.core.management.base import BaseCommand
+
+from admincommand.forms import GenericCommandForm
 
 
 class AdminCommand(models.Model):
@@ -21,7 +22,8 @@ class AdminCommand(models.Model):
     objects = None
     form = GenericCommandForm
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, name, *args, **kwargs):
+        self.name = name
         super().__init__(*args, **kwargs)
 
     def get_help(self):
@@ -30,24 +32,14 @@ class AdminCommand(models.Model):
         return self.command().help
 
     def command(self):
-        """Getter of the management command import core"""
-        from . import core  # noqa
+        app_name = get_commands()[self.name]
+        if isinstance(app_name, BaseCommand):
+            # If the command is already loaded, use it directly.
+            return app_name
+        return load_command_class(app_name, self.name)
 
-        return core.get_command(self.command_name())
-
-    @classmethod
-    def command_name(cls):
-        return generate_instance_name(cls.__name__)
-
-    def name(self):
-        return generate_human_name(type(self).__name__)
-
-    def url_name(self):
-        return type(self).__name__.lower()
-
-    @classmethod
-    def permission_codename(cls):
-        return "can_run_command_%s" % cls.command_name()
+    def permission_codename(self):
+        return f"can_run_command_{self.name}"
 
     @classmethod
     def all(cls):
