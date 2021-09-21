@@ -69,11 +69,12 @@ def getMessage(self):
     return msg
 
 
-def run_command(command_config, cleaned_data, user):
+def run_command(command_config, validated_form, user):
+    kwargs = {}
     if hasattr(command_config, "get_command_arguments"):
-        args, kwargs = command_config.get_command_arguments(cleaned_data, user)
+        args = command_config.get_command_arguments(validated_form, user)
     else:
-        args, kwargs = list(), dict()
+        args = []
 
     if command_config.asynchronous:
         if not callable(schedule):

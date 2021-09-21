@@ -48,14 +48,20 @@ class AdminCommand(models.Model):
         for runnable_command in core.get_admin_commands().values():
             yield runnable_command
 
-    def get_command_arguments(self, forms_data, user):
+    def get_command_arguments(self, validated_form, user):
         # TODO check why user was passed over here
         args = []
-        for key, value in forms_data.items():
+        for key, value in validated_form.cleaned_data.items():
 
-            if value is True:
-                args.append(f"--{key}")
-            elif value:
-                args.append(f"--{key}={value}")
+            # Postional actions
+            if validated_form.fields[key].required:
+                args.append(value)
 
-        return args, {}
+            # Optional actions
+            else:
+                if value is True:
+                    args.append(f"--{key}")
+                elif value:
+                    args.append(f"--{key}={value}")
+
+        return args

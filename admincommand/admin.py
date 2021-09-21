@@ -63,7 +63,7 @@ class AdminCommandAdmin(admin.ModelAdmin):
         if request.method == "POST":
             form = admin_command.form(request.POST, request.FILES)
             if form.is_valid():
-                coreponse = core.run_command(admin_command, form.cleaned_data, request.user)
+                coreponse = core.run_command(admin_command, form, request.user)
                 if not admin_command.asynchronous:
                     ctx["output"] = coreponse
                     return render(request, "admincommand/output.html", ctx)
