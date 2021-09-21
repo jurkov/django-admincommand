@@ -44,6 +44,9 @@ class GenericCommandForm(forms.Form):
                     choices = {}
 
                 self.fields[action.dest] = form_callable(
-                    initial=action.default, required=action.required, help_text=action.help,
-                    **choices
+                    label=action.dest,
+                    initial=action.default,
+                    required=action.required,
+                    help_text=action.help,
+                    **choices,
                 )

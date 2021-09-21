@@ -89,7 +89,7 @@ def run_command(command_config, validated_form, user):
     with monkeypatched(logging.LogRecord, "getMessage", getMessage):
         try:
             management.call_command(command_config.name, *args, **kwargs)
-        except CommandError as error:
+        except Exception as error:
             return error
 
     value = output.getvalue()
