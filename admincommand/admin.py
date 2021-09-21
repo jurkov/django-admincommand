@@ -64,17 +64,18 @@ class AdminCommandAdmin(admin.ModelAdmin):
             form = admin_command.form(request.POST, request.FILES)
             if form.is_valid():
                 coreponse = core.run_command(admin_command, form, request.user)
-                if not admin_command.asynchronous:
-                    ctx["output"] = coreponse
-                    return render(request, "admincommand/output.html", ctx)
-                else:
-                    msg = ugettext(
-                        "Task is set to run in the next 5 minutes or less. If by any luck, the task went with a duck "
-                        "and did not achieve it's duty, ask for help"
-                    )
-                    messages.info(request, msg)
-                path = reverse("admin:admincommand_admincommand_changelist")
-                return HttpResponseRedirect(path)
+                ctx["output"] = coreponse
+                return render(request, "admincommand/output.html", ctx)
+                # TODO
+                # if not admin_command.asynchronous:
+                # else:
+                #     msg = ugettext(
+                #         "Task is set to run in the next 5 minutes or less. If by any luck, the task went with a duck "
+                #         "and did not achieve it's duty, ask for help"
+                #     )
+                #     messages.info(request, msg)
+                # path = reverse("admin:admincommand_admincommand_changelist")
+                # return HttpResponseRedirect(path)
             else:
                 ctx["form"] = form
         else:

@@ -6,18 +6,9 @@ from admincommand.forms import GenericCommandForm
 
 
 class AdminCommand(models.Model):
-    """
-    Subclass this class to create an admin command
-    class name should match the name of the command to be executed
-    using the reverse algorithm used to construct instance names following
-    the PEP8. For instance for a management command named
-    ``fixing_management_policy`` the admin command class should be named
-    ``FixingManagementPolicy``.
-    """
 
-    # :attribute asynchronous: True if the command should be executed
-    # asynchronously
-    asynchronous = False
+    # TODO
+    # asynchronous = False
 
     objects = None
     form = GenericCommandForm

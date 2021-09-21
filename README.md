@@ -10,10 +10,11 @@ This is an enhanced fork, see the original: https://github.com/BackMarket/django
 Starting from this fork, changes were made in the following areas:
 
 - Add Python 3.7 and Django 3.2 compatibility
-- Errors are shown in the same way as the logs after successful execution
 - Everything needed from [django-sneak](https://github.com/rphlo/django-sneak.git) is merged directly with code
-- Date and json argument types are also supported
-- Commands are discovered from the list of names declared in admin file
+- Errors are shown in the same way as the results logs
+- Form is shown as table with positional (required) arguments in bold
+- Add support for date and json argument types as well as for choices parameter
+- Commands are discovered from the list of names declared in the same `admin.py` file
 
 > Asynchronous is still not supported for now
 
@@ -32,7 +33,11 @@ INSTALLED_APPS = [
 ]
 ```
 
+Finally, apply the app's initial migration
 
+```shell
+python manage.py migrate
+```
 
 ## Settings
 
@@ -49,7 +54,6 @@ Create a Django Management Command:
 
 ```python
 # ./music/management/commands/lyrics.py
-
 
 class Command(BaseCommand):
     help = "Compute lyrics based an bitorological fluctuations"
@@ -77,13 +81,15 @@ If you use custom admin site, don't forget to register
 
 ## Forms
 
-Forms for the options are build by running an inspection of the command argument (default to bool / checkbox).
+Forms for the options are build by running an inspection of the command arguments (defaults to `string` for positional arguments and to `boolean` / checkbox for optional ones).
 If the form does not seems correct for your management command, please check the `type` option in your management command.
 
 
 ## Logs
 
-Logs emitted using the Django (and Python) logging module will be printed on the result page of the admin. They will still go into the normal logging process. If exception occurs it will also be printed on the result page
+Logs emitted using the Django (and Python) logging module will be printed on the results page of the admin. They will still go into the normal logging process. If exception occurs it will also be printed on the results page.
+
+Please, make sure you log your messages with a logger and not a `print` function, otherwise the results page will be empty. For more info on how to use a logger see [Django documentation](https://docs.djangoproject.com/en/3.2/topics/logging/).
 
 
 ## Compatibility
@@ -100,29 +106,6 @@ only see and be able to execute admin commands for which they have the permissio
 
 ## Asynchronous tasks
 
-**This is not actively supported for now, use at your own risk**
 
-If you want to execute commands asynchronously you have to
-specify it in the AdminCommand configuration class with the
-``asynchronous`` property set to ``True``:
-
-```python
-# ./music/admincommands.py
-
-from admincommands.models import AdminCommand
-
-
-class Fugue(AdminCommand):
-
-    asynchronous = True
-
-    class form(forms.Form):
-        title = forms.CharField()
-
-    def get_command_arguments(self, forms_data):
-        return [forms_data['title']], {}
-```
-
-
-You also need to run periodically ``flush_queue`` from ``django-async`` application for that matter don't forget to install the application.
+Not supported at the moment
 

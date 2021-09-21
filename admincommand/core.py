@@ -76,15 +76,12 @@ def run_command(command_config, validated_form, user):
     else:
         args = []
 
-    if command_config.asynchronous:
-        if not callable(schedule):
-            return "This task is asynchronous but django-async is not installed"
-        task = schedule(call_command, [command_config.name, user.pk, args, kwargs])
-        return task
-
-    # Synchronous call
-    # Change stdout to a StringIO to be able to retrieve output and display it to the admin
-    # TODO put back here legacy code with settings if needed
+    # TODO
+    # if command_config.asynchronous:
+    #     if not callable(schedule):
+    #         return "This task is asynchronous but django-async is not installed"
+    #     task = schedule(call_command, [command_config.name, user.pk, args, kwargs])
+    #     return task
 
     with monkeypatched(logging.LogRecord, "getMessage", getMessage):
         try:
