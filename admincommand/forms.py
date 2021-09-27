@@ -32,21 +32,23 @@ class GenericCommandForm(forms.Form):
 
     def _process_actions(self, actions, default_form):
         for action in actions:
-            if action.dest not in self.default_actions:
-                if action.choices:
-                    form_callable = forms.ChoiceField
-                    choices = {'choices': [(choice, choice) for choice in action.choices]}
-                else:
-                    form_callable = self.mapping_type.get(
-                        action.type or type(action.default),
-                        default_form
-                    )
-                    choices = {}
-
-                self.fields[action.dest] = form_callable(
-                    label=action.dest,
-                    initial=action.default,
-                    required=action.required,
-                    help_text=action.help,
-                    **choices,
+            if action.dest in self.default_actions:
+                continue
+            if action.choices:
+                form_callable = forms.ChoiceField
+                choices = {'choices': [(choice, choice) for choice in action.choices]}
+            else:
+                form_callable = self.mapping_type.get(
+                    action.type or type(action.default),
+                    default_form
                 )
+                choices = {}
+
+            action_name = action.option_strings[-1].lstrip("-")
+            self.fields[action_name] = form_callable(
+                label=action_name,
+                initial=action.default,
+                required=action.required,
+                help_text=action.help,
+                **choices,
+            )

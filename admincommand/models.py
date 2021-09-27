@@ -50,9 +50,6 @@ class AdminCommand(models.Model):
 
             # Optional actions
             else:
-                if value is True:
-                    args.append(f"--{key}")
-                elif value:
-                    args.append(f"--{key}={value}")
+                args.append(f"--{key}" if value else f"--{key}={value}")
 
         return args
