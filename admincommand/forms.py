@@ -19,7 +19,7 @@ class GenericCommandForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         self.default_actions = (
-            "help", "version", "verbosity", "settings", "pythonpath", "traceback", "no_color"
+            "help", "version", "verbosity", "settings", "pythonpath", "traceback", "no_color", "force-color", "skip-checks"	
         )
         # TODO check what is the purpose of those arguments here, maybe needed only in case of full help display ?
         parser = self.command.create_parser("", None)
@@ -44,7 +44,7 @@ class GenericCommandForm(forms.Form):
                 )
                 choices = {}
 
-            action_name = action.option_strings[-1].lstrip("-")
+            action_name = action.option_strings[-1].lstrip("-") if len(action.option_strings) > 0 else ''
             self.fields[action_name] = form_callable(
                 label=action_name,
                 initial=action.default,
