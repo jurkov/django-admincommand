@@ -11,7 +11,7 @@ def read(fname):
 
 setup(
     name="django-admincommand",
-    version="0.2.6",
+    version="0.2.7",
     description="Execute management commands from the Django admin",
     long_description=read("README.md"),
     author="dishults",
