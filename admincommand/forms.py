@@ -48,7 +48,7 @@ class GenericCommandForm(forms.Form):
             self.fields[action_name] = form_callable(
                 label=action_name,
                 initial=action.default,
-                required=action.required,
+                required=action.required or action_name == '',
                 help_text=action.help,
                 **choices,
             )
