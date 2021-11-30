@@ -8,7 +8,7 @@ from django.urls import re_path, reverse
 from django.http import HttpResponseForbidden
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext
 
@@ -48,7 +48,7 @@ class AdminCommandAdmin(admin.ModelAdmin):
 
         ctx = {
             # original needed ``change_form.html`` context variables
-            "module_name": force_text(opts.verbose_name_plural),
+            "module_name": force_str(opts.verbose_name_plural),
             "title": admin_command.name,
             "is_popup": False,
             "root_path": None,
