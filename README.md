@@ -1,59 +1,59 @@
 # Django-AdminCommand 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
-
 
 Django-AdminCommand is a Django application that makes it possible
 to run Django management commands from the admin.
 
 ## Contributions
 
-This is an enhanced fork, see the original repo: https://github.com/liberation/django-admincommand
+This is an enhanced fork, see the original: https://github.com/BackMarket/django-admincommand
 
-First author: `Djaz Team`, with commits from @amirouche, @diox, @lauxley
+Starting from this fork, changes were made in the following areas:
 
-Django 1.11 compatibility pull request taken from @mgaitan : https://github.com/liberation/django-admincommand/pull/10
+- Add Python 3.7 and Django 3.2 compatibility
+- Everything needed from [django-sneak](https://github.com/rphlo/django-sneak.git) is merged directly with code
+- Errors are shown in the same way as the results logs
+- Form is shown as table with positional (required) arguments in bold
+- Add support for date and json argument types as well as for choices parameter
+- Commands are discovered from the list of names declared in the same `admin.py` file
 
-Starting from the fork, changes were made in the following area:
-
-- Forms are built dynamically using parser inspection to detect types.
-- Logs are collected even when using the Python/Django logging module.
-- Asynchronous is not actively supported for now, we have to dig further in.
-- Misc: Pushed to Pypi, linting, code cleanup.
-
-## Dependencies
-
- - django-async (not mandatory): Used to make task asynchronous.
- - django-sneak: Used to bybass Django admin model coupling.
-
+> Asynchronous is still not supported for now
 
 ## Installation
 
-For now you can only clone this repo and run `python setup.py develop` (sudo if needed) to setup Django AdminCommand.
+- Install only: add `git+git://github.com/Hxperience1/django-admincommand@master#egg=django-admincommand` to your `requirements.txt` file and run `pip install -r requirements.txt` as usual
+- Install and develop: clone the project, `cd` to the directory and run `pip install -e .`
 
-(Soon on PyPi)
+> Uninstall simply with `pip uninstall django_admincommand`
+
+Add the application where you defined management commands in the list of installed applications:
+
+```python
+INSTALLED_APPS = [
+	'admincommand',
+]
+```
+
+Finally, apply the app's initial migration
+
+```shell
+python manage.py migrate
+```
 
 ## Settings
-
 
 You need to activate the Django admin in the settings and ``urls.py``
 depending on your needs the configuration may vary, refer
 to the Django documentation related to the
 [`admin application`](https://docs.djangoproject.com/en/dev/ref/contrib/admin/).
 
-Don't forget to add the application where you defined management
-commands in the list of installed applications. This might be already
-done but it might not be the case if you use an application to gather
-all the management commands that must be admin commands.
+
+## Make magic happen
 
 
-## Make magic happens
+Create a Django Management Command:
 
-
-Create a Django Management Command::
-
-```py
+```python
 # ./music/management/commands/lyrics.py
-
 
 class Command(BaseCommand):
     help = "Compute lyrics based an bitorological fluctuations"
@@ -62,23 +62,17 @@ class Command(BaseCommand):
         # algorithm that generated lyrics based on a title and a dictionary
 ```
 
-Then you will have to create a configuration class for the command::
+Then you will have to add your command to the list:
 
-```py
-# ./music/admincommands.py
+```python
+# ./music/admin.py
 
-from admincommand.models import AdminCommand
-
-
-class Lyrics(AdminCommand):
-
-    pass
+ADMIN_COMMAND_LIST = [
+    'lyrics',
+]
 ```
 
-*NOTE*: This all works based on naming conventions. The file with the form must be called `admincommands` and the form class name must be the same as the management command file name (with camel case converted to underscore notation).
-(This will probably change to settings based property in upcoming days)
-
-And all is well, the new admin command will be available under the
+If all is well, the new admin command will be available under the
 «Admin Command» area of the administration of the default admin site.
 
 If you use custom admin site, don't forget to register
@@ -87,18 +81,20 @@ If you use custom admin site, don't forget to register
 
 ## Forms
 
-Forms for the options are build by running an inspection of the command argument (default to bool / checkbox).
+Forms for the options are build by running an inspection of the command arguments (defaults to `string` for positional arguments and to `boolean` / checkbox for optional ones).
 If the form does not seems correct for your management command, please check the `type` option in your management command.
 
 
 ## Logs
 
-Logs emitted using the Django (and Python) logging module will be printed on the result page of the admin. They will still go into the normal logging process.
+Logs emitted using the Django (and Python) logging module will be printed on the results page of the admin. They will still go into the normal logging process. If exception occurs it will also be printed on the results page.
+
+Please, make sure you log your messages with a logger and not a `print` function, otherwise the results page will be empty. For more info on how to use a logger see [Django documentation](https://docs.djangoproject.com/en/3.2/topics/logging/).
 
 
 ## Compatibility
 
-This module was tested and is designed for Django 1.11, may work with other versions
+This module was tested and is designed for Django 3.2, may work with other versions
 
 ## Permissions
 
@@ -110,29 +106,6 @@ only see and be able to execute admin commands for which they have the permissio
 
 ## Asynchronous tasks
 
-**This is not actively supported for now, use at your own risk**
 
-If you want to execute commands asynchronously you have to
-specify it in the AdminCommand configuration class with the
-``asynchronous`` property set to ``True``::
-
-```py
-# ./music/admincommands.py
-
-from admincommands.models import AdminCommand
-
-
-class Fugue(AdminCommand):
-
-    asynchronous = True
-
-    class form(forms.Form):
-        title = forms.CharField()
-
-    def get_command_arguments(self, forms_data):
-        return [forms_data['title']], {}
-```
-
-
-You also need to run periodically ``flush_queue`` from ``django-async`` application for that matter don't forget to install the application.
+Not supported at the moment
 

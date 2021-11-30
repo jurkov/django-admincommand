@@ -1,40 +1,54 @@
+import json
 from django import forms
+from dateutil.parser import parse as date_parse
 
 
 class GenericCommandForm(forms.Form):
     command = None
 
-    mapping_type = {str: forms.CharField, bool: forms.CharField, int: forms.IntegerField, float: forms.FloatField}
-
-    def _get_form_field_based_on_type(self, type):
-        return self.mapping_type.get(type, forms.BooleanField)
+    mapping_type = {
+        bool: forms.BooleanField,
+        str: forms.CharField,
+        int: forms.IntegerField,
+        float: forms.FloatField,
+        json.loads: forms.JSONField,
+        date_parse: forms.DateField,
+    }
 
     def __init__(self, *args, **kwargs):
-        command = kwargs.pop("command", None)
-        super(GenericCommandForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-        if not command:
-            return
-
-        self.command = command
-
-        default_actions = ("help", "version", "verbosity", "settings", "pythonpath", "traceback", "no_color")
+        self.default_actions = (
+            "help", "version", "verbosity", "settings", "pythonpath", "traceback", "no_color"
+        )
         # TODO check what is the purpose of those arguments here, maybe needed only in case of full help display ?
-        actions = self.command.command().create_parser("", None)._actions
+        parser = self.command.create_parser("", None)
         # Example
         # {'const': True, 'help': None, 'option_strings': ['--run'], 'dest': 'run', 'required': False, 'nargs': 0,
         #  'choices': None, 'default': False, type': None, 'metavar': None}
 
-        for option in actions:
-            if option.dest not in default_actions:
+        self._process_actions(parser._get_positional_actions(), forms.CharField)
+        self._process_actions(parser._get_optional_actions(), forms.BooleanField)
 
-                if option.type:
-                    form_callable = self._get_form_field_based_on_type(option.type)
-                    self.fields[option.dest] = form_callable(
-                        initial=option.default, required=option.required, help_text=option.help
-                    )
+    def _process_actions(self, actions, default_form):
+        for action in actions:
+            if action.dest in self.default_actions:
+                continue
+            if action.choices:
+                form_callable = forms.ChoiceField
+                choices = {'choices': [(choice, choice) for choice in action.choices]}
+            else:
+                form_callable = self.mapping_type.get(
+                    action.type or type(action.default),
+                    default_form
+                )
+                choices = {}
 
-                else:  # If not type is given we wild guess it is a boolean
-                    self.fields[option.dest] = forms.BooleanField(
-                        initial=option.default, required=option.required, help_text=option.help
-                    )
+            action_name = action.option_strings[-1].lstrip("-")
+            self.fields[action_name] = form_callable(
+                label=action_name,
+                initial=action.default,
+                required=action.required,
+                help_text=action.help,
+                **choices,
+            )
