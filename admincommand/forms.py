@@ -44,11 +44,11 @@ class GenericCommandForm(forms.Form):
                 )
                 choices = {}
 
-            action_name = action.option_strings[-1].lstrip("-") if len(action.option_strings) > 0 else ''
+            action_name = action.option_strings[-1].lstrip("-") if len(action.option_strings) > 0 else '-'
             self.fields[action_name] = form_callable(
                 label=action_name,
                 initial=action.default,
-                required=action.required or action_name == '',
+                required=action.required or action_name == '-',
                 help_text=action.help,
                 **choices,
             )
