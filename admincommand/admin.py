@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from functools import update_wrapper
 
-from django.conf.urls import url
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.options import csrf_protect_m
-from django.urls import reverse
+from django.urls import re_path, reverse
 from django.http import HttpResponseForbidden
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -33,7 +32,7 @@ class AdminCommandAdmin(SneakAdmin):
 
             return update_wrapper(wrapper, view)
 
-        urlpatterns = [url(r"^run/([\w_]+)", wrap(self.run_command_view))]
+        urlpatterns = [re_path(r"^run/([\w_]+)", wrap(self.run_command_view))]
         return urlpatterns + super(AdminCommandAdmin, self).get_urls()
 
     def run_command_view(self, request, url_name):
