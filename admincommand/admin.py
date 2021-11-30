@@ -19,7 +19,10 @@ from admincommand.query import CommandQuerySet
 
 class AdminCommandAdmin(admin.ModelAdmin):
     list_display = ("command_name",)
-
+    
+    def has_add_permission(self, request, obj=None):
+        return False
+    
     def get_queryset(self, request):
         # use current user to construct the queryset so that only commands the user can execute will be visible
         return CommandQuerySet(request.user)
