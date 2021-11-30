@@ -15,10 +15,9 @@ from django.utils.translation import ugettext
 from admincommand import core
 from admincommand.models import AdminCommand as AdminCommandModel
 from admincommand.query import CommandQuerySet
-from sneak.admin import SneakAdmin
 
 
-class AdminCommandAdmin(SneakAdmin):
+class AdminCommandAdmin(admin.ModelAdmin):
     list_display = ("command_name",)
 
     def get_queryset(self, request):
@@ -50,7 +49,7 @@ class AdminCommandAdmin(SneakAdmin):
         ctx = {
             # original needed ``change_form.html`` context variables
             "module_name": force_text(opts.verbose_name_plural),
-            "title": admin_command.name(),
+            "title": admin_command.name,
             "is_popup": False,
             "root_path": None,
             "app_label": app_label,
@@ -59,21 +58,23 @@ class AdminCommandAdmin(SneakAdmin):
             "help": help,
         }
 
+        admin_command.form.command = admin_command.command()
         if request.method == "POST":
             form = admin_command.form(request.POST, request.FILES)
             if form.is_valid():
-                coreponse = core.run_command(admin_command, form.cleaned_data, request.user)
-                if not admin_command.asynchronous:
-                    ctx["output"] = coreponse
-                    return render(request, "admincommand/output.html", ctx)
-                else:
-                    msg = ugettext(
-                        "Task is set to run in the next 5 minutes or less. If by any luck, the task went with a duck "
-                        "and did not achieve it's duty, ask for help"
-                    )
-                    messages.info(request, msg)
-                path = reverse("admin:admincommand_admincommand_changelist")
-                return HttpResponseRedirect(path)
+                coreponse = core.run_command(admin_command, form, request.user)
+                ctx["output"] = coreponse
+                return render(request, "admincommand/output.html", ctx)
+                # TODO
+                # if not admin_command.asynchronous:
+                # else:
+                #     msg = ugettext(
+                #         "Task is set to run in the next 5 minutes or less. If by any luck, the task went with a duck "
+                #         "and did not achieve it's duty, ask for help"
+                #     )
+                #     messages.info(request, msg)
+                # path = reverse("admin:admincommand_admincommand_changelist")
+                # return HttpResponseRedirect(path)
             else:
                 ctx["form"] = form
         else:
@@ -87,7 +88,7 @@ class AdminCommandAdmin(SneakAdmin):
         the form that of the command
         """
         path = reverse("admin:admincommand_admincommand_changelist")
-        return mark_safe('<a href="%srun/%s">%s: %s</a>' % (path, obj.url_name(), obj.name(), obj.get_help()))
+        return mark_safe('<a href="%srun/%s">%s: %s</a>' % (path, obj.name, obj.name, obj.get_help()))
 
     command_name.allow_tags = True
 

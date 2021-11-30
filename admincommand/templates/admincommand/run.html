@@ -3,25 +3,47 @@
 {% load i18n %}
 
 {% block extrahead %}
-    <link href="{{ STATIC_URL }}/admin/css/base.css" type="text/css" media="all" rel="stylesheet" />
-    <link href="{{ STATIC_URL }}/admin/css/forms.css" type="text/css" media="all" rel="stylesheet" />
-    <link href="{{ STATIC_URL }}/admin/css/widgets.css" type="text/css" media="all" rel="stylesheet" />
-    <script type="text/javascript" src="{{ STATIC_URL }}/admin/js/core.js"></script>
-    {{ block.super }}
+<link href="{{ STATIC_URL }}/admin/css/base.css" type="text/css" media="all" rel="stylesheet" />
+<link href="{{ STATIC_URL }}/admin/css/forms.css" type="text/css" media="all" rel="stylesheet" />
+<link href="{{ STATIC_URL }}/admin/css/widgets.css" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="{{ STATIC_URL }}/admin/js/core.js"></script>
+{{ block.super }}
 {% endblock %}
 
 {% block breadcrumbs %}
-    <div class="breadcrumbs">
-        <a href="../../../">{% trans "Home" %}</a> &rsaquo;
-        <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
-        {{ command_name }}
-    </div>
+<div class="breadcrumbs">
+    <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+    <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+    <a href="../">Admin commands</a> &rsaquo;
+    {{ command_name }}
+</div>
 {% endblock %}
 
 {% block content %}
-    <p>{{ help }}</p>
-    <form enctype="multipart/form-data" method="POST">{% csrf_token %}
-        {{ form.as_ul }}
-        <input type="submit" value="Run"/>
-    </form>
+<p>{{ help }}</p>
+<form enctype="multipart/form-data" method="POST">
+    {% csrf_token %}
+    <table>
+        {% for field in form %}
+        <tr>
+            <div class="fieldWrapper">
+                <td>
+                    {{ field.errors }}
+                    <label for="{{ field.auto_id }}" {% if field.field.required %} class="required" {% endif %}>
+                        {{ field.label|safe }}
+                    </label>
+                </td>
+                <td>
+                    {{ field }}
+                    {% if field.help_text %}
+                    <p class="help">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                </td>
+            </div>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <input type="submit" value="Run" />
+</form>
 {% endblock %}

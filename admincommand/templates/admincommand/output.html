@@ -4,11 +4,13 @@
 {% load i18n %}
 
 {% block breadcrumbs %}
-    <div class="breadcrumbs">
-        <a href="../../../">{% trans "Home" %}</a> &rsaquo;
-        <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
-        {{ command_name }}
-    </div>
+<div class="breadcrumbs">
+    <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+    <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+    <a href="../">Admin commands</a> &rsaquo;
+    <a href="{{ command_name }}">{{ command_name }}</a> &rsaquo;
+    Results
+</div>
 {% endblock %}
 
 {% block content %}

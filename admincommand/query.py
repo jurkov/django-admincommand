@@ -1,14 +1,15 @@
-from django.conf import settings
-from django.contrib.auth.models import Permission
-
 from admincommand.models import AdminCommand
-from sneak.query import ListQuerySet
 
 
-class CommandQuerySet(ListQuerySet):
+class CommandQuerySet(object):
     """
     Custom QuerySet to list runnable commands
     """
+
+    class query:
+        select_related = True
+        where = False
+        order_by = []
 
     def __init__(self, user, value=None):
         self.user = user
@@ -17,8 +18,20 @@ class CommandQuerySet(ListQuerySet):
         else:
             self.value = value
 
+    def __len__(self):
+        return len(self.value)
+
+    def __getitem__(self, s):
+        if isinstance(s, slice):
+            return self.value.__getitem__(s)
+        else:
+            return self.value[s]
+
     def _clone(self):
         return type(self)(self.user, self.value)
+
+    def count(self):
+        return len(self)
 
     def filter(self, *args, **kwargs):
         all_commands = []
@@ -29,3 +42,10 @@ class CommandQuerySet(ListQuerySet):
             if self.user.has_perm(full_permission_codename):
                 all_commands.append(command)
         return type(self)(self.user, all_commands)
+
+    def order_by(self, *args, **kwargs):
+        return self
+
+    def iterator(self):
+        for v in self.value:
+            yield v

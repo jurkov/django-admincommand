@@ -1,29 +1,21 @@
+from django.db import models
+from django.core.management import get_commands, load_command_class
+from django.core.management.base import BaseCommand
 
 from admincommand.forms import GenericCommandForm
-from admincommand.utils import generate_human_name
-from admincommand.utils import generate_instance_name
-from sneak.models import SneakModel
 
 
-class AdminCommand(SneakModel):
-    """
-    Subclass this class to create an admin command
-    class name should match the name of the command to be executed
-    using the reverse algorithm used to construct instance names following
-    the PEP8. For instance for a management command named
-    ``fixing_management_policy`` the admin command class should be named
-    ``FixingManagementPolicy``.
-    """
+class AdminCommand(models.Model):
 
-    # :attribute asynchronous: True if the command should be executed
-    # asynchronously
-    asynchronous = False
+    # TODO
+    # asynchronous = False
 
     objects = None
     form = GenericCommandForm
 
-    def __init__(self, *args, **kwargs):
-        super(AdminCommand, self).__init__(*args, **kwargs)
+    def __init__(self, name, *args, **kwargs):
+        self.name = name
+        super().__init__(*args, **kwargs)
 
     def get_help(self):
         if hasattr(self, "help"):
@@ -31,24 +23,14 @@ class AdminCommand(SneakModel):
         return self.command().help
 
     def command(self):
-        """Getter of the management command import core"""
-        from . import core  # noqa
+        app_name = get_commands()[self.name]
+        if isinstance(app_name, BaseCommand):
+            # If the command is already loaded, use it directly.
+            return app_name
+        return load_command_class(app_name, self.name)
 
-        return core.get_command(self.command_name())
-
-    @classmethod
-    def command_name(cls):
-        return generate_instance_name(cls.__name__)
-
-    def name(self):
-        return generate_human_name(type(self).__name__)
-
-    def url_name(self):
-        return type(self).__name__.lower()
-
-    @classmethod
-    def permission_codename(cls):
-        return "can_run_command_%s" % cls.command_name()
+    def permission_codename(self):
+        return f"can_run_command_{self.name}"
 
     @classmethod
     def all(cls):
@@ -57,16 +39,17 @@ class AdminCommand(SneakModel):
         for runnable_command in core.get_admin_commands().values():
             yield runnable_command
 
-    def get_command_arguments(self, forms_data, user):
+    def get_command_arguments(self, validated_form, user):
         # TODO check why user was passed over here
         args = []
-        for key, value in forms_data.items():
+        for key, value in validated_form.cleaned_data.items():
 
-            if value is True:
-                args.append("--" + key)
-            elif value is False:
-                pass  # Django commands does not accepts False options to be explicitly set.
+            # Postional actions
+            if validated_form.fields[key].required:
+                args.append(value)
+
+            # Optional actions
             else:
-                args.append("--" + key + "=" + value)
+                args.append(f"--{key}" if value else f"--{key}={value}")
 
-        return args, {}
+        return args
