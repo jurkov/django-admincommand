@@ -50,6 +50,7 @@ class AdminCommand(models.Model):
 
             # Optional actions
             else:
-                args.append(f"--{key}" if value else f"--{key}={value}")
+                if validated_form.fields[key].initial != value:
+                    args.append(f"--{key}" if value else f"--{key}={value}")
 
         return args
