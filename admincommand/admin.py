@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext
+from django.utils.translation import gettext
 
 from admincommand import core
 from admincommand.models import AdminCommand as AdminCommandModel
@@ -68,7 +68,7 @@ class AdminCommandAdmin(admin.ModelAdmin):
                 # TODO
                 # if not admin_command.asynchronous:
                 # else:
-                #     msg = ugettext(
+                #     msg = gettext(
                 #         "Task is set to run in the next 5 minutes or less. If by any luck, the task went with a duck "
                 #         "and did not achieve it's duty, ask for help"
                 #     )
