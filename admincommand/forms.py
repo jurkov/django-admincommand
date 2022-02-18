@@ -1,6 +1,6 @@
 import json
-from django import forms
 from dateutil.parser import parse as date_parse
+from django import forms
 
 
 class GenericCommandForm(forms.Form):
@@ -11,7 +11,7 @@ class GenericCommandForm(forms.Form):
         str: forms.CharField,
         int: forms.IntegerField,
         float: forms.FloatField,
-        json.loads: forms.JSONField,
+        json.loads: forms.Textarea,
         date_parse: forms.DateField,
     }
 
@@ -19,7 +19,8 @@ class GenericCommandForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         self.default_actions = (
-            "help", "version", "verbosity", "settings", "pythonpath", "traceback", "no_color", "force_color", "skip_checks"	
+            "help", "version", "verbosity", "settings", "pythonpath", "traceback", "no_color", "force_color",
+            "skip_checks"
         )
         # TODO check what is the purpose of those arguments here, maybe needed only in case of full help display ?
         parser = self.command.create_parser("", None)

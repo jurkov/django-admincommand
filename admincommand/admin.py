@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-from functools import update_wrapper
-
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.options import csrf_protect_m
-from django.urls import re_path, reverse
 from django.http import HttpResponseForbidden
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext
+from functools import update_wrapper
 
 from admincommand import core
 from admincommand.models import AdminCommand as AdminCommandModel
@@ -19,10 +19,10 @@ from admincommand.query import CommandQuerySet
 
 class AdminCommandAdmin(admin.ModelAdmin):
     list_display = ("command_name",)
-    
+
     def has_add_permission(self, request, obj=None):
         return False
-    
+
     def get_queryset(self, request):
         # use current user to construct the queryset so that only commands the user can execute will be visible
         return CommandQuerySet(request.user)
@@ -34,7 +34,7 @@ class AdminCommandAdmin(admin.ModelAdmin):
 
             return update_wrapper(wrapper, view)
 
-        urlpatterns = [re_path(r"^run/([\w_]+)", wrap(self.run_command_view))]
+        urlpatterns = [url(r"^run/([\w_]+)", wrap(self.run_command_view))]
         return urlpatterns + super(AdminCommandAdmin, self).get_urls()
 
     def run_command_view(self, request, url_name):
